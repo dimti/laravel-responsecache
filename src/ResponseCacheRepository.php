@@ -2,6 +2,7 @@
 
 namespace Spatie\ResponseCache;
 
+use Illuminate\Cache\RedisTaggedCache;
 use Illuminate\Cache\Repository;
 use Symfony\Component\HttpFoundation\Response;
 use Spatie\ResponseCache\Serializers\Serializer;
@@ -43,7 +44,11 @@ class ResponseCacheRepository
 
     public function clear()
     {
-        $this->cache->clear();
+        if ($this->cache instanceof RedisTaggedCache) {
+            $this->cache->flush();
+        } else {
+            $this->cache->clear();
+        }
     }
 
     public function forget(string $key): bool
